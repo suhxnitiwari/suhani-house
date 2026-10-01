@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Her House · Suhani Tiwari</title>
+<meta name="description" content="One house, nineteen rooms. Every room is a different side of Suhani Tiwari. Tap a room to turn its light on.">
+<meta property="og:title" content="Her House">
+<meta property="og:description" content="One house, nineteen rooms. Tap a room to turn its light on.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Playfair+Display:ital,wght@0,700;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+  :root { --wine: #2A0F1E; --rose: #E0567F; --pop: #FF4F9A; --petal: #FF9DBB; --blush: #FBE9EE; --muted: #f7b8cc; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--wine); color: #ffe3ec; font: 16px/1.5 "DM Sans", sans-serif; overflow-x: hidden; }
+  button { font: inherit; cursor: pointer; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+  .head { padding-top: 52px; }
+  .kicker { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; font-weight: 700; color: var(--pop); }
+  h2 { font: 800 clamp(40px, 6vw, 68px)/1.02 "Playfair Display", serif; margin: 10px 0 8px; color: #fff; }
+  h2 em { font-style: italic; font-weight: 600; color: var(--petal); }
+  .lede { margin: 0; color: var(--muted); }
+
+  .lab { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 26px; align-items: center; padding-top: 10px; }
+  @media (max-width: 1080px) { .lab { grid-template-columns: 1fr; } }
+  .stage { position: relative; aspect-ratio: 1000 / 770; }
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+  .line { fill: none; stroke: var(--petal); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .thin { fill: none; stroke: rgba(255,157,187,.5); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .floor-n { font: italic 600 22px "Playfair Display", serif; fill: var(--petal); }
+  .floor-q { font: 700 9.5px "DM Sans", sans-serif; letter-spacing: .14em; fill: rgba(255,157,187,.75); text-transform: uppercase; }
+  .room { cursor: pointer; }
+  .room .hit { fill: rgba(255,157,187,.03); transition: fill .3s; }
+  .room .glow { opacity: 0; transition: opacity .6s ease; }
+  .room .stuff { fill: none; stroke: rgba(255,157,187,.55); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke .35s; }
+  .room .stuff .f { fill: rgba(255,157,187,.55); stroke: none; transition: fill .35s; }
+  .room .num { font: 600 10px "DM Sans", sans-serif; fill: rgba(255,157,187,.6); letter-spacing: .08em; }
+  .room .name { font: italic 600 13px "Playfair Display", serif; fill: #fff; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .room:hover .hit, .room:focus-visible .hit { fill: rgba(255,79,154,.12); }
+  .room:hover .stuff { stroke: #fff; } .room:hover .stuff .f { fill: #fff; }
+  .room:hover .name, .room.on .name, .lights .room .name { opacity: 1; }
+  .room:focus { outline: none; }
+  .room.lit .glow { opacity: .5; }
+  .room.lit .stuff { stroke: #ffd6e3; } .room.lit .stuff .f { fill: #ffd6e3; }
+  .room.on .glow { opacity: 1; }
+  .room.on .stuff { stroke: #fff; } .room.on .num { fill: #fff; }
+  .steam { animation: rise 3.6s ease-in-out infinite; }
+  @keyframes rise { 50% { transform: translateY(-4px); opacity: .5; } }
+  .star { fill: var(--petal); animation: tw 3s ease-in-out infinite; }
+  @keyframes tw { 50% { opacity: .2; } }
+  .sway { animation: sway 4s ease-in-out infinite; transform-box: fill-box; transform-origin: top center; }
+  @keyframes sway { 50% { transform: rotate(4deg); } }
+
+  .card { background: rgba(18,6,12,.6); border: 1px solid rgba(255,79,154,.35); border-radius: 26px; padding: 24px; min-height: 280px; display: flex; flex-direction: column; }
+  .card.empty { justify-content: center; }
+  .card.in { animation: cardIn .45s ease; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(8px); } }
+  .card .where { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; color: var(--pop); }
+  .card h3 { font: 800 clamp(28px, 3vw, 38px)/1.05 "Playfair Display", serif; margin: 8px 0 6px; color: #fff; }
+  .card h3 em { font-style: italic; font-weight: 600; color: var(--petal); }
+  .card .holds { font-size: 13px; color: var(--petal); margin: 0 0 10px; }
+  .card p { margin: 0 0 16px; color: var(--muted); }
+  .card .go { margin-top: auto; align-self: flex-start; background: var(--pop); color: #fff; text-decoration: none; font-weight: 600; border-radius: 99px; padding: 9px 18px; }
+  .card .go:hover { background: var(--rose); }
+
+  .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 18px 0 70px; }
+  .btn { background: transparent; color: var(--petal); border: 1px solid rgba(255,79,154,.6); border-radius: 99px; padding: 10px 18px; font-weight: 600; transition: .2s; }
+  .btn:hover { background: rgba(255,79,154,.15); color: #fff; }
+  .count { margin-left: auto; font-size: 13px; color: var(--muted); }
+  .count b { color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .steam, .star, .sway { animation: none; } }
+  .foot { border-top: 1px solid rgba(255,79,154,.2); padding: 26px 20px 40px; text-align: center; font-size: 13px; color: var(--muted); }
+  .foot a { color: var(--petal); }
+</style>
+</head>
+<body>
+<header class="head wrap">
+  <div class="kicker">Her house</div>
+  <h2>One house. <em>Nineteen rooms.</em></h2>
+  <p class="lede">Every room is a different side of her, with its own vibe. Tap a room to turn its light on, then walk in.</p>
+</header>
+
+<div class="lab wrap">
+  <div class="stage">
+    <svg viewBox="0 0 1000 770" id="house" role="group" aria-label="Her house: four floors, nineteen rooms. Tap a room to turn its light on.">
+      <defs>
+        <radialGradient id="warm" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#FF4F9A" stop-opacity=".5"/><stop offset=".6" stop-color="#E0567F" stop-opacity=".18"/><stop offset="1" stop-color="#E0567F" stop-opacity="0"/></radialGradient>
+        <pattern id="earth" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="3" cy="4" r="1" fill="rgba(255,157,187,.18)"/><circle cx="10" cy="11" r=".8" fill="rgba(255,157,187,.14)"/></pattern>
+      </defs>
+      <!-- the night, the ground, the earth under the basement -->
+      <g aria-hidden="true">
+        <path class="thin" d="M880 70 a26 26 0 1 0 18 44 a21 21 0 1 1 -18 -44 z"/>
+        <circle class="star" cx="760" cy="44" r="2"/><circle class="star" cx="120" cy="80" r="1.8" style="animation-delay:1s"/><circle class="star" cx="230" cy="36" r="1.6" style="animation-delay:2s"/><circle class="star" cx="640" cy="22" r="1.6" style="animation-delay:.5s"/><circle class="star" cx="960" cy="200" r="1.5" style="animation-delay:1.6s"/><circle class="star" cx="36" cy="210" r="1.7" style="animation-delay:2.4s"/><circle class="star" cx="380" cy="18" r="1.3" style="animation-delay:1.2s"/>
+        <rect x="0" y="582" width="1000" height="170" fill="url(#earth)"/>
+        <path class="line" d="M0 580 H1000"/>
+        <path class="line" d="M700 116 V70 H736 V140"/>
+        <path class="thin steam" d="M712 62 q7 -9 0 -18 t0 -18 M724 60 q7 -9 0 -18 t0 -18"/>
+        <!-- a tree on each side -->
+        <path class="thin" d="M20 580 V520 M20 540 l-8 -8"/><ellipse class="thin" cx="20" cy="504" rx="15" ry="22"/>
+        <path class="thin" d="M962 580 V512 M962 532 l12 -10"/><ellipse class="thin" cx="962" cy="494" rx="22" ry="28"/>
+        <!-- floor labels -->
+        <text class="floor-n" x="52" y="300" text-anchor="middle">I</text><text class="floor-n" x="52" y="400" text-anchor="middle">II</text><text class="floor-n" x="52" y="526" text-anchor="middle">III</text><text class="floor-n" x="140" y="672" text-anchor="middle">IV</text>
+      </g>
+      <g id="rooms"></g>
+      <!-- the bones of the house, drawn over the rooms -->
+      <g aria-hidden="true" pointer-events="none">
+        <path class="line" d="M60 192 L500 30 L940 192"/>
+        <path class="line" d="M80 184 V580 M920 184 V580 M80 190 H920 M80 320 H920 M80 450 H920"/>
+        <path class="line" d="M248 190 V320 M416 190 V320 M584 190 V320 M752 190 V320"/>
+        <path class="line" d="M248 320 V450 M416 320 V450 M584 320 V450 M752 320 V450"/>
+        <path class="line" d="M220 450 V580 M360 450 V580 M500 450 V580 M640 450 V580 M780 450 V580"/>
+        <path class="line" d="M200 590 V730 H800 V590 M500 590 V730"/>
+        <path class="thin" d="M470 580 v10 M530 580 v10"/>
+      </g>
+    </svg>
+  </div>
+  <aside class="card empty" id="card" aria-live="polite">
+    <div class="where">Four floors · nineteen rooms</div>
+    <h3>Come on <em>in.</em></h3>
+    <p>The attic is her head. The basement is what she built. Every room in between is another side of her.</p>
+  </aside>
+</div>
+<div class="bar wrap">
+  <button class="btn" id="allBtn">Turn every light on</button>
+  <button class="btn" id="offBtn" hidden>Lights off</button>
+  <span class="count"><b id="seenN">0</b> of 19 rooms lit</span>
+</div>
+
+<footer class="foot"><a href="https://suhxnitiwari.github.io/suhani-personality/">The full portrait →</a> · <a href="https://suhanitiwari.com">suhanitiwari.com</a><p>© 2026 Suhani Tiwari. All rights reserved.</p></footer>
+
+<script>
+/* every room: [stop id, room name, what it holds, one line of vibe, box [x, y, w, h], line art in local coordinates] */
+const ROOMS = [
+  ['brain', 'The <em>Attic</em>', 'Inside her head', 'Where she thinks. Seven regions, all backed by her results.', 'tri',
+    `<circle cx="420" cy="120" r="24"/><path d="M420 96 V144 M396 120 H444"/>
+     <path d="M486 150 c-8 -20 4 -40 24 -42 c8 -12 30 -12 38 0 c18 0 28 18 20 32 c8 14 -2 32 -18 30 c-6 12 -26 14 -36 4 c-14 6 -30 -6 -28 -24 z"/><path d="M510 120 q10 8 20 0 M520 140 q10 -6 22 2 M540 112 v16"/>
+     <path d="M560 182 h60 M576 182 v-10 h28 v10"/>`],
+  ['shell', 'The <em>Training Room</em>', 'Strong spirit', 'Where the boss energy gets built: protective, driven, principled.', [80, 190, 168, 130],
+    `<g class="sway"><path d="M50 0 V24"/><path d="M38 24 h24 v54 a12 12 0 0 1 -24 0 z"/><path d="M38 44 h24"/></g>
+     <path d="M98 120 h40 M94 110 v20 M142 110 v20 M90 114 v12 M146 114 v12"/><rect x="104" y="18" width="40" height="56" rx="20"/>`],
+  ['core', 'The <em>Greenhouse</em>', 'Soft heart', 'Where she tends her people, carefully, every season.', [248, 190, 168, 130],
+    `<path d="M24 76 V30 a60 30 0 0 1 120 0 V76 M84 0 V76 M24 40 H144"/>
+     <path d="M30 128 l4 -22 h24 l4 22 z M46 106 c-10 -14 -4 -26 0 -30 c4 4 10 16 0 30 M46 100 c-14 -4 -16 -12 -16 -16 M46 98 c12 -4 16 -12 16 -16"/>
+     <path d="M110 128 l3 -16 h20 l3 16 z M123 112 v-14 M123 98 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0"/>`],
+  ['both', 'The <em>Dressing Room</em>', 'Both, not either', 'Silk and steel on the same rack. Heels by the door, bare feet inside.', [416, 190, 168, 130],
+    `<path d="M14 26 H100 M20 26 V128 M94 26 V128"/><path d="M34 26 v6 l-12 10 h24 z M60 26 v6 l-12 10 h24 z M84 26 v6 l-10 10 h20 z"/>
+     <path d="M30 42 l-4 40 h20 l-4 -40 M56 42 l-6 50 h24 l-6 -50"/>
+     <ellipse cx="134" cy="62" rx="20" ry="32"/><path d="M118 128 c6 -2 10 -8 12 -14 h10 v14 z M150 120 v8"/>`],
+  ['strengths', 'The <em>Map Room</em>', 'The pattern', 'Ten tests, one map: where they all point the same way.', [584, 190, 168, 130],
+    `<rect x="16" y="16" width="96" height="62" rx="2"/><path d="M30 64 L52 34 L76 52 L98 28 M30 64 L76 52"/><circle cx="30" cy="64" r="3" class="f"/><circle cx="52" cy="34" r="3" class="f"/><circle cx="76" cy="52" r="3" class="f"/><circle cx="98" cy="28" r="3" class="f"/>
+     <circle cx="138" cy="84" r="18"/><path d="M120 84 h36 M138 66 c-8 10 -8 26 0 36 c8 -10 8 -26 0 -36 M138 102 v14 M126 128 h24 l-12 -12 z"/>`],
+  ['words', 'The <em>Library</em>', 'In a word', 'Twelve words, each one on its own shelf.', [752, 190, 168, 130],
+    `<path d="M14 10 V128 M96 10 V128 M14 44 H96 M14 84 H96 M14 124 H96"/>
+     <path d="M22 44 V20 M30 44 V24 M38 44 V18 M50 44 l8 -22 M66 44 V22 M76 44 V26 M84 44 V20 M22 84 V60 M32 84 V56 M46 84 V62 M58 84 V58 M70 84 V60 M80 84 l8 -20"/>
+     <path d="M122 128 v-30 a12 12 0 0 1 24 0 v30 M118 106 h32 M150 36 v92 M140 36 h20 l-4 -10 h-12 z"/>`],
+  ['circle', 'The <em>Living Room</em>', 'Her inner circle', 'The couch only seats a few. They are family.', [80, 320, 168, 130],
+    `<rect x="20" y="14" width="26" height="20" rx="1"/><rect x="54" y="10" width="20" height="26" rx="1"/><rect x="82" y="16" width="26" height="18" rx="1"/>
+     <path d="M20 112 v-24 a8 8 0 0 1 8 -8 h100 a8 8 0 0 1 8 8 v24 z M14 100 h12 v20 M142 100 h-12 v20 M36 80 v-10 h84 v10"/>
+     <ellipse cx="80" cy="126" rx="70" ry="4"/><path d="M152 128 V60 M144 60 h16 l-4 -14 h-8 z"/>`],
+  ['gifts', 'The <em>Gift Closet</em>', 'Her love language', 'Wrapped months early. Guess what is inside.', [248, 320, 168, 130],
+    `<path d="M10 52 H158 M10 96 H158"/>
+     <path d="M20 52 v-26 h30 v26 M35 26 v26 M20 38 h30 M35 26 c-6 -8 -12 -4 -8 0 M35 26 c6 -8 12 -4 8 0"/>
+     <path d="M70 52 v-18 h22 v18 M81 34 v18 M70 42 h22"/><path d="M110 52 v-34 h34 v34 M127 18 v34 M110 34 h34 M127 18 c-8 -10 -14 -4 -8 0 M127 18 c8 -10 14 -4 8 0"/>
+     <path d="M26 96 v-20 h44 v20 M48 76 v20 M96 96 v-28 h26 v28 M109 68 v28 M96 80 h26"/><path d="M40 128 v-16 h80 v16 M80 112 v16"/>`],
+  ['mood', 'The <em>Kitchen</em>', 'The mood meter', 'A vanilla latte fixes most things. Here is what does not.', [416, 320, 168, 130],
+    `<path d="M10 14 h70 v28 h-70 z M45 14 v28 M38 28 h-4 M56 28 h-4"/><path d="M10 92 H158 M10 92 v36 M158 92 v36 M84 92 v36"/>
+     <path d="M100 92 v-14 h18 v14 M118 82 h4 a4 4 0 0 1 0 8 h-4"/><path class="steam" d="M104 70 q4 -6 0 -12 M112 70 q4 -6 0 -12"/>
+     <path d="M30 92 v-18 a14 14 0 0 1 28 0 v18 M58 80 h8 l4 -6"/><path d="M130 14 v30 M126 44 h8"/>`],
+  ['icks', 'The <em>Guest Room</em>', 'Ick or green flag', 'Who gets invited back, and who does not.', [584, 320, 168, 130],
+    `<path d="M14 128 v-34 h96 v34 M14 104 h96 M14 94 v-20 h20 v20"/><path d="M30 94 c0 -8 14 -8 14 0"/>
+     <rect x="58" y="16" width="34" height="44" rx="2"/><path d="M68 14 h14 v6 h-14 z M64 32 l3 3 l5 -6 M76 32 h12 M64 44 l3 3 l5 -6 M76 44 h12"/>
+     <path d="M128 128 V30 h28 V128 M128 30 l16 10 V128"/><circle cx="140" cy="84" r="1.8" class="f"/>`],
+  ['match', 'The <em>Dining Room</em>', 'Would we click?', 'Pull up a chair. Would you two click?', [752, 320, 168, 130],
+    `<path d="M84 0 V20 M70 32 l14 -12 l14 12 z"/><path d="M30 92 h108 M44 92 v36 M124 92 v36"/>
+     <path d="M66 92 v-12 M66 80 c-3 -4 0 -8 0 -8 c0 0 3 4 0 8 M102 92 v-12 M102 80 c-3 -4 0 -8 0 -8 c0 0 3 4 0 8"/>
+     <path d="M14 128 V74 M14 100 h18 v28 M154 128 V74 M154 100 h-18 v28"/>`],
+  ['values', 'The <em>Quiet Room</em>', 'What she lives by', 'What she lives by, and what wins when two of them collide.', [80, 450, 140, 130],
+    `<path d="M40 70 V24 a30 18 0 0 1 60 0 V70 z M70 6 V70 M40 40 h60"/><path class="thin" d="M70 76 l-30 40 M70 76 l30 40 M70 76 v44"/>
+     <path d="M22 128 c0 -10 30 -10 30 0 z M104 120 v-14 M104 106 c-3 -4 0 -9 0 -9 c0 0 3 5 0 9 M98 128 h12 v-8 h-12 z"/>`],
+  ['photos', 'The <em>Gallery</em>', 'Snapshots', 'Ten snapshots. No captions needed.', [220, 450, 140, 130],
+    `<rect x="14" y="16" width="30" height="34" rx="1"/><path d="M18 20 h22 v22 h-22 z"/><rect x="54" y="10" width="34" height="40" rx="1"/><path d="M58 14 h26 v26 h-26 z"/><rect x="98" y="20" width="28" height="30" rx="1"/><path d="M102 24 h20 v18 h-20 z"/>
+     <rect x="34" y="62" width="30" height="26" rx="1"/><rect x="76" y="58" width="32" height="34" rx="1"/>
+     <path d="M30 128 v-14 h80 v14 M30 120 h80"/>`],
+  ['careers', 'The <em>Office</em>', 'Where she thrives', 'Where she would do her best work.', [360, 450, 140, 130],
+    `<path d="M14 96 H126 M24 96 v32 M116 96 v32"/><path d="M48 96 l4 -26 h40 l4 26 M58 70 h28"/><path d="M42 96 h60"/>
+     <path d="M30 128 v-20 h18 v20 M26 108 h26"/><path d="M110 96 v-12 h12 v12 M116 84 c-6 -8 -4 -16 0 -18 c4 2 6 10 0 18"/>
+     <rect x="36" y="12" width="68" height="40" rx="2"/><path d="M36 26 h68 M70 12 v40"/>`],
+  ['rip', 'The <em>Boiler Room</em>', 'Absolutely not', 'Twenty jobs she would quit on day one.', [500, 450, 140, 130],
+    `<rect x="20" y="40" width="44" height="88" rx="20"/><circle cx="42" cy="70" r="10"/><path d="M42 70 l5 -5"/>
+     <path d="M64 56 H100 V12 M64 96 H118 V12 M100 12 H140 M118 30 H140"/><circle cx="100" cy="74" r="4"/><path d="M96 74 h8"/>
+     <path class="steam" d="M126 10 q5 -6 0 -12"/>`],
+  ['ask', 'The <em>Study</em>', 'Ask the data', 'Ask anything. Every answer cites her results.', [640, 450, 140, 130],
+    `<path d="M14 96 H126 M24 96 v32 M116 96 v32"/><path d="M40 96 c10 -6 20 -6 30 0 c10 -6 20 -6 30 0 M40 96 v-8 c10 -6 20 -6 30 0 c10 -6 20 -6 30 0 v8"/>
+     <path d="M108 96 v-26 M98 70 h20 l-4 -12 h-12 z"/>
+     <path d="M30 18 h56 a8 8 0 0 1 8 8 v18 a8 8 0 0 1 -8 8 h-40 l-10 10 v-10 h-6 a8 8 0 0 1 -8 -8 v-18 a8 8 0 0 1 8 -8 z"/><path d="M44 30 h32 M44 40 h20"/>`],
+  ['quiz', 'The <em>Game Room</em>', 'What would she do?', 'Ten situations. Predict what she does.', [780, 450, 140, 130],
+    `<circle cx="100" cy="36" r="22"/><circle cx="100" cy="36" r="13"/><circle cx="100" cy="36" r="4" class="f"/><path d="M78 36 h44"/>
+     <path d="M14 98 H110 M26 98 v30 M98 98 v30"/><rect x="34" y="80" width="16" height="16" rx="3" transform="rotate(-12 42 88)"/><circle cx="40" cy="86" r="1.4" class="f"/><circle cx="45" cy="91" r="1.4" class="f"/>
+     <path d="M64 96 l6 -18 h14 l-6 18 z"/><path d="M20 30 v30 h30 v-30 z M20 45 h30 M35 30 v30"/>`],
+  ['palette', 'The <em>Studio</em>', 'Her colors and fonts', 'Every color and font on this page, chosen from her results.', [200, 590, 300, 140],
+    `<path d="M70 136 L96 30 L122 136 M96 30 V14 M84 96 H108"/><rect x="72" y="28" width="48" height="40" rx="1"/><path d="M80 50 c8 -12 18 -12 22 -2 c4 8 10 6 12 -2"/>
+     <rect x="160" y="24" width="96" height="56" rx="2"/><path d="M160 52 H256 M184 24 v56 M208 24 v56 M232 24 v56"/>
+     <path d="M168 136 v-22 h20 v22 M196 136 v-16 h18 v16 M226 136 v-26 h20 v26"/><path d="M20 136 l14 -46 l5 2 l-12 46"/>`],
+  ['code', 'The <em>Workshop</em>', 'The final personality test', 'The last piece of evidence: she built this.', [500, 590, 300, 140],
+    `<path d="M30 92 H210 M44 92 v44 M196 92 v44"/><path d="M80 92 l6 -40 h70 l6 40 M90 52 h60"/><path d="M106 64 l-8 8 l8 8 M134 64 l8 8 l-8 8 M124 62 l-8 20"/>
+     <rect x="226" y="18" width="62" height="70" rx="2"/><path d="M236 30 v20 M232 30 h8 M252 28 l10 10 l-10 10 M270 30 v24 M266 54 h8 M240 66 h40 M244 76 h32"/>
+     <path d="M50 92 v-14 h18 v14"/>`]
+];
+
+const NS = 'http://www.w3.org/2000/svg', $ = id => document.getElementById(id);
+const mk = (tag, attrs, html) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (html) e.innerHTML = html; return e; };
+const svg = $('house'), card = $('card');
+let ctx; const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66];
+const tone = (f, at, dur, vol) => { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); const t = ctx.currentTime + at, o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + .05); } catch (e) {} };
+
+const pieces = ROOMS.map(([id, name, holds, line, box, art], i) => {
+  const g = mk('g', { class: 'room', tabindex: '0', role: 'button', 'aria-label': `Room ${i + 1}: ${name.replace(/<[^>]+>/g, '')}, ${holds}` });
+  let shape, ox = 0, oy = 0, cx, by;
+  if (box === 'tri') { shape = ['path', { d: 'M86 190 L500 38 L914 190 Z' }]; cx = 500; by = 182; }
+  else { const [x, y, w, h] = box; shape = ['rect', { x, y, width: w, height: h }]; ox = x; oy = y; cx = x + w / 2; by = y + h - 8; }
+  g.append(mk(shape[0], { ...shape[1], class: 'glow', fill: 'url(#warm)' }));
+  g.append(mk(shape[0], { ...shape[1], class: 'hit' }));
+  g.append(mk('g', { class: 'stuff', transform: `translate(${ox} ${oy})` }, art));
+  if (box !== 'tri') g.append(mk('text', { class: 'num', x: ox + 8, y: oy + 14 }, String(i + 1).padStart(2, '0')));
+  g.append(mk('text', { class: 'name', x: cx, y: box === 'tri' ? 172 : oy - 6 + (box[3] || 0), 'text-anchor': 'middle' }, name.replace(/<[^>]+>/g, '')));
+  $('rooms').append(g);
+  return g;
+});
+
+const seen = new Set();
+const light = i => { pieces[i].classList.add('lit'); seen.add(i); $('seenN').textContent = seen.size; };
+const show = i => {
+  const [id, name, holds, line] = ROOMS[i], fresh = !seen.has(i);
+  pieces.forEach((p, k) => p.classList.toggle('on', k === i)); light(i);
+  tone(NOTES[i % 7] * (i > 13 ? 2 : 1), 0, .5, .08);
+  if (fresh && seen.size === ROOMS.length) [523.25, 659.25, 783.99, 1046.5].forEach((f, k) => tone(f, .5 + k * .09, .9, .06));
+  card.className = 'card'; void card.offsetWidth; card.classList.add('in');
+  card.innerHTML = `<div class="where">Room ${String(i + 1).padStart(2, '0')}</div><h3>${name}</h3><p class="holds">${holds}</p><p>${line}</p><a class="go" href="https://suhxnitiwari.github.io/suhani-personality/#${id}">Walk in →</a>`;
+};
+pieces.forEach((p, i) => {
+  p.addEventListener('click', () => show(i));
+  p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(i); } });
+});
+$('allBtn').onclick = () => {
+  svg.classList.add('lights');
+  pieces.forEach((p, i) => setTimeout(() => { light(i); tone(NOTES[i % 7] * (i > 13 ? 2 : 1), 0, .4, .05); }, i * 110));
+  $('allBtn').hidden = true; $('offBtn').hidden = false;
+};
+$('offBtn').onclick = () => {
+  svg.classList.remove('lights'); pieces.forEach(p => p.classList.remove('lit', 'on')); seen.clear(); $('seenN').textContent = 0;
+  $('allBtn').hidden = false; $('offBtn').hidden = true;
+};
+</script>
+</body>
+</html>
